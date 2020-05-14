@@ -1,45 +1,50 @@
 import { Application, Router } from "https://deno.land/x/oak/mod.ts";
 
-const books = new Map<string, any>();
-books.set("1", {
-  id: "1",
-  title: "A Study in Scarlet",
-  author: "Conan Doyle, Author",
-});
-books.set("2", {
-  id: "2",
-  title: "The Sign of the Four",
-  author: "Conan Doyle, Author",
-});
-books.set("3", {
-  id: "3",
-  title: "The Hound of the Baskervilles",
-  author: "Conan Doyle, Author",
-});
-books.set("4", {
-  id: "4",
-  title: "The Valley of Fear",
-  author: "Conan Doyle, Author",
-});
-
 const router = new Router();
 
 router
   .get("/", (context: any) => {
-    context.response.body = "Standart GET handler";
+    context.response.body = "PokeDeno is here!";
   })
-  .post(
-    "/",
-    (context: any) => {
-      context.response.body = "Standart POST handler";
+  .post("/", (context: any) => {
+    context.response.body = "PokeDeno is here!";
+  })
+  .get(
+    "/pokemon",
+    async (context: any) => {
+      const pokemons = (await (await fetch(
+        "https://pokeapi.co/api/v2/pokemon/?limit=-1",
+      )).json());
+      context.response.body = JSON.stringify(pokemons);
     },
   )
   .post(
-    "/books",
-    (context: any) => {
-      context.response.body = [...books];
+    "/pokemon",
+    async (context: any) => {
+      const pokemons = (await (await fetch(
+        "https://pokeapi.co/api/v2/pokemon/?limit=-1",
+      )).json());
+      context.response.body = JSON.stringify(pokemons);
     },
-  );
+  )
+  .get("/pokemon/:name", async (context: any) => {
+    if (context.params && context.params.name) {
+      const { name } = context.params;
+      const pokemon = (await (await fetch(
+        `https://pokeapi.co/api/v2/pokemon/${name}`,
+      )).json());
+      context.response.body = JSON.stringify(pokemon);
+    }
+  })
+  .post("/pokemon/:name", async (context: any) => {
+    if (context.params && context.params.name) {
+      const { name } = context.params;
+      const pokemon = (await (await fetch(
+        `https://pokeapi.co/api/v2/pokemon/${name}`,
+      )).json());
+      context.response.body = JSON.stringify(pokemon);
+    }
+  });
 
 const app = new Application();
 
